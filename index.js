@@ -1,4 +1,5 @@
 const app = new (require('koa'))();
+const mongoose = require('mongoose');
 
 const v1Routes = require('./routes/v1');
 const config = require('./config');
@@ -24,5 +25,8 @@ const port = process.env.PORT || config.PORT;
 const server = require('http').createServer(app.callback());
 
 server.listen(port, () => {
-    console.info(`Server is running on port : ${port}`);
+    mongoose
+        .connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(() => console.info(`Server is running on port : ${port}`))
+        .catch(console.trace);
 });

@@ -5,6 +5,7 @@ const compose = require('koa-compose');
 const readChunk = require('read-chunk');
 
 const { Util } = require('../components');
+const paginate = require('./paginate');
 
 async function normalizeFile(file) {
     const buffer = readChunk.sync(_.get(file, 'path'), 0, 4100);
@@ -44,4 +45,4 @@ async function normalizer(ctx, next) {
     await next();
 }
 
-module.exports = () => compose([koaBody({ multipart: true }), normalizer]);
+module.exports = () => compose([koaBody({ multipart: true }), normalizer, paginate()]);

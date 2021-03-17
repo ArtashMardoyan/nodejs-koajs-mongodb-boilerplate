@@ -1,14 +1,33 @@
+const User = require('../models/User');
+
 class UserHandler {
-    static actionIndex(ctx) {
-        return ctx.ok({ actionIndex: 'actionIndex' });
+    static async actionIndex(ctx) {
+        const { limit, offset, page: currentPage } = ctx.state.paginate;
+
+        const [users, total] = await Promise.all([
+            await User.find()
+                .skip(offset)
+                .limit(limit),
+            await User.countDocuments()
+        ]);
+
+        return ctx.ok({ users, _meta: { total, currentPage, pageCount: Math.ceil(total / limit) } });
     }
 
-    static actionView(ctx) {
-        return ctx.ok({ actionView: 'actionView' });
+    static async actionView(ctx) {
+        const { id } = ctx.params;
+
+        const user = await User.findById(id);
+
+        return ctx.ok({ user });
     }
 
-    static actionCreate(ctx) {
-        return ctx.ok({ actionCreate: 'actionCreate' });
+    static async actionCreate(ctx) {
+        const { firstName, lastName, email, password } = ctx.request.body;
+
+        const user = await User.create({ firstName, lastName, email, password });
+
+        return ctx.created({ user });
     }
 
     static actionUpdate(ctx) {
