@@ -26,7 +26,12 @@ const server = require('http').createServer(app.callback());
 
 server.listen(port, () => {
     mongoose
-        .connect(config.MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+        .connect(config.MONGODB_URL, {
+            useCreateIndex: true,
+            useNewUrlParser: true,
+            useFindAndModify: false,
+            useUnifiedTopology: true
+        })
         .then(() => console.info(`Server is running on port : ${port}`))
         .catch(console.trace);
 });

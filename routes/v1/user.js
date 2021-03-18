@@ -5,12 +5,12 @@ const UserHandler = require('../../handlers/UserHandler');
 const router = new Router({ prefix: '/users' });
 
 router.get('/', UserHandler.actionIndex);
-router.get('/:id', UserHandler.actionView);
+router.get('/:_id', UserHandler.actionView);
 
 router.post('/', UserHandler.actionCreate);
 
-router.put('/', UserHandler.actionUpdate);
+router.put('/:_id', UserHandler.actionUpdate);
 
-router.delete('/', UserHandler.actionDelete);
+router.delete('/:_id', UserHandler.actionDelete);
 
 module.exports = router;

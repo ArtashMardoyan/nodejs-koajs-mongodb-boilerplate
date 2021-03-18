@@ -1,3 +1,6 @@
+const _ = require('lodash');
+
+const { ErrorMessage } = require('../constants');
 const User = require('../models/User');
 
 class UserHandler {
@@ -15,9 +18,13 @@ class UserHandler {
     }
 
     static async actionView(ctx) {
-        const { id } = ctx.params;
+        const { _id } = ctx.params;
 
-        const user = await User.findById(id);
+        const user = await User.findById(_id);
+
+        if (_.isEmpty(user)) {
+            return ctx.notFound(ErrorMessage.USER_NOT_FOUND);
+        }
 
         return ctx.ok({ user });
     }
@@ -30,12 +37,35 @@ class UserHandler {
         return ctx.created({ user });
     }
 
-    static actionUpdate(ctx) {
-        return ctx.ok({ actionUpdate: 'actionUpdate' });
+    static async actionUpdate(ctx) {
+        const { firstName, lastName } = ctx.request.body;
+        const { _id } = ctx.params;
+
+        const user = await User.findById(_id);
+
+        if (_.isEmpty(user)) {
+            return ctx.notFound(ErrorMessage.USER_NOT_FOUND);
+        }
+
+        _.extend(user, { firstName, lastName });
+
+        await user.save();
+
+        return ctx.ok({ user });
     }
 
-    static actionDelete(ctx) {
-        return ctx.ok({ actionDelete: 'actionDelete' });
+    static async actionDelete(ctx) {
+        const { _id } = ctx.params;
+
+        const user = await User.findById(_id);
+
+        if (_.isEmpty(user)) {
+            return ctx.notFound(ErrorMessage.USER_NOT_FOUND);
+        }
+
+        await User.deleteOne({ _id });
+
+        return ctx.accepted();
     }
 }
 
